@@ -45,7 +45,7 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
     @SneakyThrows
     @WithMockUser(roles = "MODERATOR")
     public void helloTest() {
-        MockHttpServletResponse response = mvc.perform(get("/api/users/hello"))
+        MockHttpServletResponse response = mockMvc.perform(get("/api/users/hello"))
                 .andReturn()
                 .getResponse();
         assertEquals(HttpStatus.OK.value(), response.getStatus());
@@ -89,7 +89,9 @@ public class UserControllerIntegrationTest extends BaseIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequest)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.password").value("Password should be greater than 4 characters long"));
+
     }
     @Test
     @WithMockUser(roles = "MODERATOR")
